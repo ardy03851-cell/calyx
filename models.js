@@ -107,11 +107,11 @@ export const models = [
   },
  
   {
-    id: "nvidia/nemotron-3-super-120b-a12b:free",
-    name: "Nemotron-3-Super",
-    provider: "Nvidia",
+    id: "inclusionai/ling-3.0-flash-vl:free",
+    name: "Ling-3-flash",
+    provider: "Inclusionai",
     description:
-      "High-performance free open-weights model by Nvidia.",
+      "High-performance free open-weights model.",
 
     apiKey: "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",
     endpoint: "https://openrouter.ai/api/v1/chat/completions",
@@ -119,6 +119,6 @@ export const models = [
     badge: "Active Key",
 
     logoUrl:
-      "https://img.icons8.com/?size=100&id=LYrucgAsfqSh&format=png&color=000000"
+      "https://img.icons8.com/?size=100&id=16ts5SYE1mSA&format=png&color=000000"
   }
 ];

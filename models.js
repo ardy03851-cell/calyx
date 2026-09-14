@@ -72,7 +72,7 @@ export const models = [
       "https://img.icons8.com/?size=100&id=0eDJPfgvKarQ&format=png&color=000000"
   },
 
-   {
+  {
     id: "google/gemma-4-26b-a4b-it:free",
     name: "Google-gemma4",
     provider: "Google",
@@ -87,5 +87,22 @@ export const models = [
     // Official Anthropic website favicon/logo asset.
     logoUrl:
       "https://img.icons8.com/?size=100&id=xMV4V1pU5UhT&format=png&color=000000"
-  }
+  },
+
+  {
+    id: "qwen/qwen3-coder:free",
+    name: "qwen-3-coder",
+    provider: "Alibaba",
+    description:
+      "A usefull but free model for reasoning and coding.",
+
+    apiKey: "sk-Us-n80W1Zdm1PJTNMp1w8g",
+    endpoint: "https://api.anyapi.ai/v1/chat/completions",
+
+    badge: "Active Key",
+
+    // Official OpenAI website favicon/logo asset.
+    logoUrl:
+      "https://favicon.run/favicon?domain=www.qwen.com&sz=32"
+  } 
 ];

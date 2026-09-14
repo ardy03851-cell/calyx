@@ -70,5 +70,22 @@ export const models = [
     // Official Anthropic website favicon/logo asset.
     logoUrl:
       "https://img.icons8.com/?size=100&id=0eDJPfgvKarQ&format=png&color=000000"
+  },
+
+   {
+    id: "google/gemma-4-26b-a4b-it:free",
+    name: "Google-gemma4",
+    provider: "Google",
+    description:
+      "A stubborn but epic Google model.",
+
+    apiKey: "sk-FIXxOhoDqd_FGPwRK64meA",
+    endpoint: "https://api.anyapi.ai/v1/chat/completions",
+
+    badge: "Active Key",
+
+    // Official Anthropic website favicon/logo asset.
+    logoUrl:
+      "https://img.icons8.com/?size=100&id=xMV4V1pU5UhT&format=png&color=000000"
   }
 ];

@@ -362,6 +362,37 @@
             animation: borderFlow 7s ease infinite
         }
 
+
+
+
+        .composer.is-submitting {
+            animation: borderFlow 0.5s ease infinite;
+        }
+
+
+
+
+        .composer.is-submitting::after {
+            content: "";
+            position: absolute;
+            inset: -4px;
+            border-radius: 28px;
+            background: conic-gradient(from 0deg, transparent 0%, #ffffff 30%, transparent 60%, #9b7cff 90%, transparent 100%);
+            animation: strokeCircle 0.5s linear infinite;
+            z-index: -2;
+            opacity: 0.95;
+            filter: blur(1px);
+        }
+
+
+
+
+        @keyframes strokeCircle {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
         @keyframes borderFlow {
             0% {
                 background-position: 0% 50%
@@ -416,18 +447,27 @@
         }
 
         .model-select {
-            min-height: 38px;
-            max-width: 240px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 0 11px;
-            border-radius: 12px;
+            width: 42px;
+            height: 42px;
+            min-height: unset;
+            max-width: unset;
+            display: grid;
+            place-items: center;
+            padding: 0;
+            border-radius: 50%;
             background: rgba(255, 255, 255, .055);
-            border: 1px solid rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .1);
             cursor: pointer;
             color: #dfe3f7;
-            font-size: 13px
+            font-size: 13px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .model-select:hover {
+            background: rgba(255, 255, 255, .1);
+            border-color: rgba(118, 139, 255, .4);
+            transform: scale(1.05);
         }
 
         /* Fixed uniform logo sizing styles */
@@ -476,39 +516,33 @@
             position: absolute;
             left: 16px;
             bottom: 78px;
-            width: min(340px, calc(100% - 32px));
-            max-height: min(380px, calc(100vh - 140px));
+            width: min(380px, calc(100% - 32px));
+            max-height: min(420px, calc(100vh - 140px));
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            padding: 8px;
-            border-radius: 18px;
+            padding: 12px;
+            border-radius: 20px;
             background: rgba(12, 15, 26, .96);
-            border: 1px solid rgba(133, 147, 255, .18);
-            box-shadow: 0 25px 80px rgba(0, 0, 0, .65);
+            border: 1px solid rgba(133, 147, 255, .22);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, .75);
             backdrop-filter: blur(25px);
             display: none;
             z-index: 30;
             scrollbar-width: thin;
             scrollbar-color: rgba(118, 139, 255, .4) rgba(255, 255, 255, .05);
+            transform: translateY(15px) scale(0.95);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
         }
-
-
-
 
         .model-menu::-webkit-scrollbar {
             width: 6px;
         }
 
-
-
-
         .model-menu::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, .03);
             border-radius: 4px;
         }
-
-
-
 
         .model-menu::-webkit-scrollbar-thumb {
             background: rgba(118, 139, 255, .4);
@@ -516,30 +550,96 @@
         }
 
         .model-menu.open {
-            display: block
+            display: block;
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        .model-tree-group {
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .model-tree-group:not(:last-child):after {
+            content: "";
+            position: absolute;
+            left: 14px;
+            top: 32px;
+            bottom: -8px;
+            width: 2px;
+            background: linear-gradient(to bottom, rgba(118, 139, 255, .3), rgba(118, 139, 255, .05));
         }
 
         .model-group-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 11px;
             text-transform: uppercase;
-            letter-spacing: .1em;
-            color: var(--muted);
-            padding: 10px 11px 4px;
+            letter-spacing: .12em;
+            color: var(--blue);
+            padding: 10px 8px 6px;
             font-weight: 700;
         }
 
+        .model-group-title::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--blue);
+            box-shadow: 0 0 10px var(--blue);
+        }
+
+        .model-tree-items {
+            padding-left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
         .model-item {
+            position: relative;
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 9px 11px;
-            border-radius: 12px;
-            cursor: pointer
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 14px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, .02);
+            border: 1px solid rgba(255, 255, 255, .04);
+            transition: all 0.25s ease;
+            animation: treeItemIn 0.3s ease backwards;
+        }
+
+        .model-item::before {
+            content: "";
+            position: absolute;
+            left: -12px;
+            top: 50%;
+            width: 12px;
+            height: 2px;
+            background: rgba(118, 139, 255, .2);
         }
 
         .model-item:hover,
         .model-item:active {
-            background: rgba(255, 255, 255, .06)
+            background: rgba(118, 139, 255, .08);
+            border-color: rgba(118, 139, 255, .3);
+            transform: translateX(4px);
+            box-shadow: 0 4px 20px rgba(71, 93, 255, .15);
+        }
+
+        @keyframes treeItemIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .model-item strong {
@@ -736,8 +836,7 @@
                                 <div class="left-tools">
                                     <button class="model-select" id="modelSelect" type="button" aria-label="Choose AI model">
                     <span id="selectedLogo"></span>
-                    <span class="model-name" id="selectedModel">Loading models…</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="m7 10 5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    <span class="model-name" id="selectedModel" style="display:none">Loading models…</span>
                   </button>
                                 </div>
                                 <div class="right-tools">
@@ -959,23 +1058,33 @@
     });
 
     let firstFound = null;
+    let globalIndex = 0;
 
     Object.keys(groups).forEach(providerName => {
+      const groupWrap = document.createElement("div");
+      groupWrap.className = "model-tree-group";
+
       const header = document.createElement("div");
       header.className = "model-group-title";
       header.textContent = providerName;
-      modelMenu.appendChild(header);
+      groupWrap.appendChild(header);
+
+      const itemsContainer = document.createElement("div");
+      itemsContainer.className = "model-tree-items";
 
       groups[providerName].forEach(model => {
         if (!firstFound) firstFound = model;
+        globalIndex++;
 
         const item = document.createElement("div");
         item.className = "model-item";
-        item.appendChild(logoElement(model, 20));
+        item.style.animationDelay = `${globalIndex * 0.05}s`;
+        item.appendChild(logoElement(model, 24));
 
         const info = document.createElement("div");
         info.style.minWidth = "0";
-        info.innerHTML = `<strong>${escapeHtml(model.name)}</strong><small>${escapeHtml(model.id)}</small>`;
+        info.style.flex = "1";
+        info.innerHTML = `<strong>${escapeHtml(model.name)}</strong><small>${escapeHtml(model.id)} • ${escapeHtml(model.type || 'text')}</small>`;
         item.appendChild(info);
 
         if (model.badge) {
@@ -991,8 +1100,11 @@
           modelMenu.classList.remove("open");
         });
 
-        modelMenu.appendChild(item);
+        itemsContainer.appendChild(item);
       });
+
+      groupWrap.appendChild(itemsContainer);
+      modelMenu.appendChild(groupWrap);
     });
 
     if (!activeModel && firstFound) {
@@ -1170,6 +1282,7 @@
     addMessage("user", text);
     prompt.value = "";
     send.disabled = true;
+    document.querySelector(".composer")?.classList.add("is-submitting");
     const loading = loadingMessage();
 
     try {
@@ -1189,6 +1302,7 @@
       loading.remove();
       addMessage("ai", "I couldn't reach the selected model. Check configuration in models.js.\n\n" + (error?.message || "Unknown error"));
     } finally {
+      document.querySelector(".composer")?.classList.remove("is-submitting");
       send.disabled = false;
       prompt.focus();
     }

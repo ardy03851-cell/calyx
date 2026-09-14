@@ -690,6 +690,132 @@
             font-weight: 500;
         }
 
+        .file-attachment-card {
+            margin-top: 12px;
+            background: rgba(14, 18, 32, .85);
+            border: 1px solid rgba(118, 139, 255, .25);
+            border-radius: 14px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .file-attachment-card:hover {
+            border-color: rgba(118, 139, 255, .5);
+            background: rgba(20, 25, 45, .9);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .file-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(118, 139, 255, .15);
+            color: #9cb2ff;
+            display: grid;
+            place-items: center;
+            font-size: 11px;
+            font-weight: 700;
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+
+        .file-meta {
+            min-width: 0;
+        }
+
+        .file-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #f0f3ff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-size {
+            font-size: 11px;
+            color: #828ba8;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .file-action-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 0;
+        }
+
+        .btn-preview {
+            background: rgba(118, 139, 255, .15);
+            color: #b3bdff;
+            border: 1px solid rgba(118, 139, 255, .3);
+        }
+
+        .btn-preview:hover {
+            background: rgba(118, 139, 255, .25);
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #7184ff, #425cff);
+            color: white;
+            box-shadow: 0 4px 12px rgba(66, 92, 255, .3);
+        }
+
+        .btn-download:hover {
+            opacity: 0.9;
+        }
+
+        .workspace-files {
+            display: flex;
+            overflow-x: auto;
+            background: rgba(8, 11, 20, .9);
+            border-bottom: 1px solid var(--line);
+            padding: 0 8px;
+            gap: 4px;
+            scrollbar-width: thin;
+        }
+
+        .workspace-file-tab {
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #858ba5;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .workspace-file-tab:hover {
+            color: #dce1ff;
+        }
+
+        .workspace-file-tab.active {
+            color: #f5f7ff;
+            border-bottom-color: #7184ff;
+            background: rgba(118, 139, 255, .05);
+        }
+
         .workspace {
             width: 0;
             overflow: hidden;
@@ -883,15 +1009,23 @@
                 <div class="workspace-head">
                     <div class="workspace-title"><span class="file-dot"></span><span id="fileName">index.html</span>
                     </div>
-                    <button class="icon-btn" id="copyCode" title="Copy code" aria-label="Copy code">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="1.7"/></svg>
-          </button>
+                    <div style="display:flex; gap:6px;">
+                        <button class="icon-btn" id="downloadAllFiles" title="Download all files" aria-label="Download all files" style="width:auto; padding:0 10px; font-size:12px; gap:6px;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3v13m0 0l-4-4m4 4l4-4M3 17v2a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                            Download All
+                        </button>
+                        <button class="icon-btn" id="copyCode" title="Copy code" aria-label="Copy code">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="8" y="8" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="1.7"/></svg>
+              </button>
+                    </div>
                 </div>
+                <div class="workspace-files" id="workspaceFiles"></div>
                 <div class="workspace-body">
                     <div class="line-nos" id="lineNos">1</div>
                     <div class="editor" id="editor">// Your generated code will appear here.</div>
                 </div>
-                <div class="workspace-foot"><span class="status"><i></i> AI workspace</span><span>Ready</span></div>
+                <div class="workspace-foot">
+                    <span class="status"><i></i> AI workspace</span><span id="workspaceStatus">Ready</span></div>
             </aside>
         </main>
     </div>
@@ -1026,7 +1160,8 @@
   const fileName = $("fileName");
 
   let activeModel = models?.[0] || null;
-  let latestCode = "";
+  let projectFiles = {}; // filename -> content
+  let activeFileName = "";
 
   // Sized & uniform logo element creator
   function logoElement(model, size = 20) {
@@ -1157,7 +1292,7 @@
     return String(value ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
   }
 
-  function addMessage(role, text, code = null, lang = "html") {
+  function addMessage(role, text, files = []) {
     welcome?.remove();
     const row = document.createElement("div");
     row.className = "message " + role;
@@ -1173,22 +1308,35 @@
     bubble.className = "bubble";
     bubble.innerHTML = formatText(text);
 
-    if (code) {
-      const card = document.createElement("div");
-      card.className = "code-card";
-      card.innerHTML = `
-        <div class="code-head">
-          <div class="dots"><i></i><i></i><i></i></div>
-          <span class="lang">${escapeHtml(lang)}</span>
-          <button class="copy" type="button">Copy</button>
-        </div>
-        <pre>${escapeHtml(code)}</pre>`;
-      card.querySelector(".copy").addEventListener("click", async () => {
-        await navigator.clipboard?.writeText(code);
-        card.querySelector(".copy").textContent = "Copied";
-        setTimeout(() => card.querySelector(".copy").textContent = "Copy", 1200);
+    if (files && files.length > 0) {
+      files.forEach(file => {
+        projectFiles[file.name] = file.content;
+        const ext = file.name.split('.').pop() || "txt";
+        const card = document.createElement("div");
+        card.className = "file-attachment-card";
+        card.innerHTML = `
+          <div class="file-info">
+            <div class="file-icon">${escapeHtml(ext)}</div>
+            <div class="file-meta">
+              <div class="file-name">${escapeHtml(file.name)}</div>
+              <div class="file-size">${file.content.length} bytes • Generated file</div>
+            </div>
+          </div>
+          <div class="file-actions">
+            <button class="file-action-btn btn-preview" type="button">Preview</button>
+            <button class="file-action-btn btn-download" type="button">Download</button>
+          </div>`;
+
+        card.querySelector(".btn-preview").addEventListener("click", () => {
+          openFileInWorkspace(file.name);
+        });
+
+        card.querySelector(".btn-download").addEventListener("click", () => {
+          downloadFile(file.name, file.content);
+        });
+
+        bubble.appendChild(card);
       });
-      bubble.appendChild(card);
     }
 
     row.appendChild(bubble);
@@ -1199,27 +1347,65 @@
 
   function formatText(text) {
     return escapeHtml(text)
+      .replace(/```file:[^\n]+\n[\s\S]*?```/g, "")
       .replace(/```[\s\S]*?```/g, "")
       .replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" style="max-width:100%; border-radius:14px; margin-top:10px; display:block;" />')
       .replace(/\n/g, "<br>");
   }
 
-  function showWorkspace(code, lang = "html") {
-    latestCode = code;
-    workspace.classList.add("active");
-    closeWorkspace.style.display = "grid";
-    editor.textContent = code;
-    fileName.textContent = lang === "css" ? "styles.css" : lang === "js" || lang === "javascript" ? "script.js" : "index.html";
-    const count = Math.max(1, code.split("\n").length);
-    lineNos.textContent = Array.from({length: count}, (_, i) => i + 1).join("\n");
+  function downloadFile(name, content) {
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }
 
-  function extractCode(text) {
-    const match = text.match(/```(?:html|css|javascript|js|typescript|ts|json|jsx|tsx|xml)?\s*\n?([\s\S]*?)```/i);
-    if (!match) return null;
-    const raw = match[1].trim();
-    const first = text.match(/```([a-z0-9+#-]*)/i);
-    return { code: raw, lang: first?.[1] || "code" };
+  function openFileInWorkspace(name) {
+    if (!projectFiles[name]) return;
+    activeFileName = name;
+    workspace.classList.add("active");
+    closeWorkspace.style.display = "grid";
+    editor.textContent = projectFiles[name];
+    fileName.textContent = name;
+    const count = Math.max(1, projectFiles[name].split("\n").length);
+    lineNos.textContent = Array.from({length: count}, (_, i) => i + 1).join("\n");
+    renderWorkspaceTabs();
+  }
+
+  function renderWorkspaceTabs() {
+    const tabsContainer = $("workspaceFiles");
+    if (!tabsContainer) return;
+    tabsContainer.innerHTML = "";
+    Object.keys(projectFiles).forEach(name => {
+      const tab = document.createElement("div");
+      tab.className = "workspace-file-tab" + (name === activeFileName ? " active" : "");
+      tab.innerHTML = `<span>📄</span> ${escapeHtml(name)}`;
+      tab.addEventListener("click", () => openFileInWorkspace(name));
+      tabsContainer.appendChild(tab);
+    });
+  }
+
+  function extractFiles(text) {
+    const fileRegex = /```file:([^\n]+)\n([\s\S]*?)```/g;
+    let match;
+    const files = [];
+    while ((match = fileRegex.exec(text)) !== null) {
+      files.push({ name: match[1].trim(), content: match[2].trim() });
+    }
+    if (files.length > 0) return files;
+
+    const singleMatch = text.match(/```([a-z0-9+#-]*)\s*\n?([\s\S]*?)```/i);
+    if (singleMatch) {
+      const lang = singleMatch[1] || "html";
+      const ext = lang === "css" ? "styles.css" : lang === "js" || lang === "javascript" ? "script.js" : "index.html";
+      return [{ name: ext, content: singleMatch[2].trim() }];
+    }
+    return [];
   }
 
   function loadingMessage() {
@@ -1286,7 +1472,7 @@
     const body = {
       model: activeModel.id,
       messages: [
-        { role: "system", content: "You are an expert software engineer and web game developer. When the user asks for code, provide production-quality code in fenced code blocks." },
+        { role: "system", content: "You are an expert full-stack developer and software engineer. When creating apps or websites, create files as needed using ```file:filename.ext\n...code...\n``` blocks. You can create multiple files (like index.html, script.js, styles.css) if needed." },
         { role: "user", content: userText }
       ],
       temperature: 0.35
@@ -1317,10 +1503,10 @@
       if (loading._cleanup3D) loading._cleanup3D();
       loading.remove();
 
-      const code = extractCode(answer);
-      if (code) {
-        addMessage("ai", answer, code.code, code.lang);
-        showWorkspace(code.code, code.lang);
+      const files = extractFiles(answer);
+      if (files.length > 0) {
+        addMessage("ai", answer, files);
+        openFileInWorkspace(files[0].name);
       } else {
         addMessage("ai", answer);
       }
@@ -1353,13 +1539,19 @@
     closeWorkspace.style.display = "none";
   });
   $("copyCode").addEventListener("click", async () => {
-    if (!latestCode) return;
-    await navigator.clipboard?.writeText(latestCode);
+    if (!activeFileName || !projectFiles[activeFileName]) return;
+    await navigator.clipboard?.writeText(projectFiles[activeFileName]);
+  });
+  $("downloadAllFiles").addEventListener("click", () => {
+    Object.keys(projectFiles).forEach(name => {
+      downloadFile(name, projectFiles[name]);
+    });
   });
   $("newChat").addEventListener("click", () => {
     messages.innerHTML = "";
     messages.appendChild(welcomeTemplate());
-    latestCode = "";
+    projectFiles = {};
+    activeFileName = "";
     workspace.classList.remove("active");
     closeWorkspace.style.display = "none";
     updateSelectedModel();

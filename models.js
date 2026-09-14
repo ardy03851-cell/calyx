@@ -104,5 +104,21 @@ export const models = [
     // Official OpenAI website favicon/logo asset.
     logoUrl:
       "https://favicon.run/favicon?domain=www.qwen.com&sz=32"
-  } 
+  },
+ 
+  {
+    id: "nvidia/nemotron-3-super-120b-a12b:free",
+    name: "Nemotron-3-Super",
+    provider: "Nvidia",
+    description:
+      "High-performance free open-weights model by Nvidia.",
+
+    apiKey: "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",
+    endpoint: "https://openrouter.ai/api/v1/chat/completions",
+
+    badge: "Active Key",
+
+    logoUrl:
+      "https://img.icons8.com/?size=100&id=LYrucgAsfqSh&format=png&color=000000"
+  }
 ];

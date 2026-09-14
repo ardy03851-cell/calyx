@@ -547,20 +547,11 @@
             display: block;
         }
 
-        .model-shine {
+        .model-item small {
             display: block;
-            height: 4px;
-            width: 36px;
-            border-radius: 4px;
-            margin-top: 5px;
-            background: linear-gradient(90deg, var(--shine-1, #6f82ff), var(--shine-2, #9b7cff), var(--shine-1, #6f82ff));
-            background-size: 200% 100%;
-            animation: modelShineAnim 2.5s linear infinite;
-        }
-
-        @keyframes modelShineAnim {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
+            color: #727991;
+            margin-top: 1px;
+            font-size: 11px;
         }
 
         .model-item .badge {
@@ -987,13 +978,6 @@
         info.innerHTML = `<strong>${escapeHtml(model.name)}</strong><small>${escapeHtml(model.id)}</small>`;
         item.appendChild(info);
 
-        if (model.logoUrl) {
-        extractColorsFromImage(model.logoUrl, (c1, c2) => {
-          item.style.setProperty('--shine-1', c1);
-          item.style.setProperty('--shine-2', c2);
-        });
-      }
-
         if (model.badge) {
           const badge = document.createElement("span");
           badge.className = "badge";
@@ -1032,48 +1016,6 @@
 
   function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-  }
-
-  function extractColorsFromImage(imgUrl, callback) {
-    if (!imgUrl) return callback('#6f82ff', '#9b7cff');
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = 16;
-      canvas.height = 16;
-      try {
-        ctx.drawImage(img, 0, 0, 16, 16);
-        const imgData = ctx.getImageData(0, 0, 16, 16).data;
-        let rSum = 0, gSum = 0, bSum = 0, count = 0;
-        let maxSat = -1;
-        let vibrantR = 111, vibrantG = 130, vibrantB = 255;
-        let baseR = 155, baseG = 124, baseB = 255;
-
-        for (let i = 0; i < imgData.length; i += 4) {
-          const r = imgData[i], g = imgData[i+1], b = imgData[i+2], a = imgData[i+3];
-          if (a < 128) continue;
-          const max = Math.max(r, g, b), min = Math.min(r, g, b);
-          const sat = max === 0 ? 0 : (max - min) / max;
-          if (sat > maxSat && max - min > 20) {
-            maxSat = sat;
-            vibrantR = r; vibrantG = g; vibrantB = b;
-          }
-          rSum += r; gSum += g; bSum += b; count++;
-        }
-        if (count > 0) {
-          baseR = Math.round(rSum / count);
-          baseG = Math.round(gSum / count);
-          baseB = Math.round(bSum / count);
-        }
-        callback(`rgb(${baseR},${baseG},${baseB})`, `rgb(${vibrantR},${vibrantG},${vibrantB})`);
-      } catch(e) {
-        callback('#6f82ff', '#9b7cff');
-      }
-    };
-    img.onerror = () => callback('#6f82ff', '#9b7cff');
-    img.src = imgUrl;
   }
 
   function addMessage(role, text, code = null, lang = "html") {
